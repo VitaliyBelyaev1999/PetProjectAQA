@@ -1,0 +1,24 @@
+# Виртуальное окружение
+venv/
+.venv/
+
+# Кэш Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Папки IDE (для разных редакторов)
+.vscode/
+.idea/
+
+# Результаты Allure-отчетов
+allure-results/
+allure-report/
+
+# Файлы с секретами (хорошая практика)
+.env
+*.env
+
+# Временные файлы
+debug_request.py
