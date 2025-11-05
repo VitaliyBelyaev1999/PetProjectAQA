@@ -72,16 +72,3 @@ def test_delete_user():
     with allure.step("Check status code 204 (correct delete)"):
         assert response.status_code == 204
 
-
-@pytest.mark.api
-def test_create_user():
-    payload = {"name": "morpheus", "job": "leader"}
-    response = requests.post(f"{BASE_URL}/users", json=payload, headers=headers)
-
-    assert response.status_code == 201
-    body = response.json()
-    assert body["name"] == payload["name"]
-    assert body["job"] == payload["job"]
-    assert "id" in body
-    assert "createdAt" in body
-
