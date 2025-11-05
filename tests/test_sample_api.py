@@ -1,23 +1,49 @@
 import requests
 import logging
+import pytest
 
 # Настройка логгера
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://reqres.in/api"
 
-headers = { "x-api-key": "reqres-free-v1" }
 
-def test_get_list_users():
-    response = requests.get(f"{BASE_URL}/users?page=2", headers=headers)
-    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
-    
+@pytest.fixture
+def api_headers():
+    return {"x-api-key": "reqres-free-v1"}
+
+
+@pytest.fixture(autouse=True)
+def setup_and_teardown():
+    logger.info(f"Setup")
+    yield
+    logger.info(f"Teardown")
+
+
+def test_get_list_users(api_headers):
+    response = requests.get(f"{BASE_URL}/users?page=2", headers=api_headers)
     data = response.json()
-
-    # Логируем данные через логгер
-    logger.info(f"Response data: {data}")
-
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
     assert "data" in data, "Response JSON missing 'data' key"
     assert isinstance(data["data"], list), "'data' is not a list"
+
+
+def test_check_page_key(api_headers):
+    response = requests.get(f"{BASE_URL}/users?page=2", headers=api_headers)
+    data = response.json()
+    logger.info(f"Response page: {data['page']}")
+    assert "page" in data, "Response JSON missing 'page' key"
+    assert data["page"] == 2, "page is not 2"
+    assert "data" in data, "Response JSON missing 'data' key"
+    
+
+def test_get_nonexistent_page(api_headers):
+    response = requests.get(f"{BASE_URL}/users?page=9999", headers=api_headers)
+    data = response.json()
+    logger.info(f"Response for nonexistent page: {data}")
+    assert response.status_code == 200, "Ожидается статус 200"
+    assert "data" in data, "В ответе отсутствует ключ 'data'"
+    assert isinstance(data["data"], list), "'data' не список"
+    assert len(data["data"]) == 0, "Список пользователей должен быть пустым"
 
