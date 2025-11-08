@@ -16,9 +16,9 @@ def api_headers():
 
 @pytest.fixture(autouse=True)
 def setup_and_teardown():
-    logger.info(f"Setup")
+    logging.debug(f"Setup")
     yield
-    logger.info(f"Teardown")
+    logging.debug(f"Teardown")
 
 
 def test_get_list_users(api_headers):
@@ -32,7 +32,7 @@ def test_get_list_users(api_headers):
 def test_check_page_key(api_headers):
     response = requests.get(f"{BASE_URL}/users?page=2", headers=api_headers)
     data = response.json()
-    logger.info(f"Response page: {data['page']}")
+    logging.debug(f"Response page: {data['page']}")
     assert "page" in data, "Response JSON missing 'page' key"
     assert data["page"] == 2, "page is not 2"
     assert "data" in data, "Response JSON missing 'data' key"
@@ -41,7 +41,7 @@ def test_check_page_key(api_headers):
 def test_get_nonexistent_page(api_headers):
     response = requests.get(f"{BASE_URL}/users?page=9999", headers=api_headers)
     data = response.json()
-    logger.info(f"Response for nonexistent page: {data}")
+    logging.debug(f"Response for nonexistent page: {data}")
     assert response.status_code == 200, "Ожидается статус 200"
     assert "data" in data, "В ответе отсутствует ключ 'data'"
     assert isinstance(data["data"], list), "'data' не список"
